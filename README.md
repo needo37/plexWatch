@@ -6,7 +6,7 @@ Follow steps 1 through 3 and ONLY steps 1 through 3 here: https://github.com/lju
 
 To run:
 
-docker run -d --name="plexWatch" -v /path/to/plexWatch:/plexWatch -v /path/to/plex/logs:/logs -p 80:80 needo/plexWatch &
+docker run -d --net="host" --name="plexWatch" -v /path/to/plexWatch:/plexWatch -v /path/to/plex/logs:/logs -p 8080:8080 needo/plexwatch
 
 To access plexWatchWeb visit:
 

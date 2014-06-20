@@ -2,6 +2,9 @@ FROM debian:jessie
 MAINTAINER needo <needo@superhero.org>
 ENV DEBIAN_FRONTEND noninteractive
 
+# Fix timezone
+RUN ln -sf /usr/share/zoneinfo/CST6CDT /etc/localtime
+
 RUN apt-get update -q
 
 # Install plexWatch Dependencies
@@ -22,11 +25,15 @@ RUN a2enmod php5
 # Delete the annoying default index.html page
 RUN rm -f /var/www/html/index.html
 
+# Update apache configuration with this one
+ADD apache-config.conf /etc/apache2/sites-available/000-default.conf
+ADD ports.conf /etc/apache2/ports.conf
+
 # Checkout plexWebWatch from github
 RUN git clone https://github.com/ecleese/plexWatchWeb.git /var/www/html/plexWatch
 
 # Set config.php to under plexWatch
-RUN ln -s /plexWatch/config.php /var/www/html/plexWatch/config.php
+RUN ln -s /plexWatch/config.php /var/www/html/plexWatch/config/config.php
 
 # Manually set the apache environment variables in order to get apache to work immediately.
 ENV APACHE_RUN_USER www-data
@@ -35,7 +42,7 @@ ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 
-EXPOSE 80
+EXPOSE 8080
 
 # The plexWatch directory. Where the binary, config, and database is
 VOLUME /plexWatch
