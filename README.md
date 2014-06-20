@@ -10,7 +10,7 @@ docker run -d --net="host" --name="plexWatch" -v /path/to/plexWatch:/plexWatch -
 
 To access plexWatchWeb visit:
 
-http://server/plexWatch/
+http://server:8080/plexWatch/
 
 Troubleshooting:
 
