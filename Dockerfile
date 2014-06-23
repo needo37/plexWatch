@@ -14,7 +14,7 @@ ADD crons.conf /root/crons.conf
 RUN crontab /root/crons.conf
 
 # Install plexWebWatch Dependencies
-RUN apt-get install -qy apache2 libapache2-mod-php5 git php5-sqlite
+RUN apt-get install -qy apache2 libapache2-mod-php5 wget php5-sqlite
 
 # Enable PHP
 RUN a2enmod php5
@@ -26,8 +26,11 @@ RUN rm -f /var/www/html/index.html
 ADD apache-config.conf /etc/apache2/sites-available/000-default.conf
 ADD ports.conf /etc/apache2/ports.conf
 
-# Checkout plexWebWatch from github
-RUN git clone https://github.com/ecleese/plexWatchWeb.git /var/www/html/plexWatch
+# Install plexWebWatch v1.5.4.2
+RUN mkdir -p /var/www/html/plexWatch
+RUN wget -P /tmp/ https://github.com/ecleese/plexWatchWeb/archive/v1.5.4.2.tar.gz
+RUN tar -C /var/www/html/plexWatch -xvf /tmp/v1.5.4.2.tar.gz --strip-components 1
+RUN chown www-data:www-data /var/www/html/plexWatch
 
 # Set config.php to under plexWatch
 RUN ln -s /plexWatch/config.php /var/www/html/plexWatch/config/config.php
