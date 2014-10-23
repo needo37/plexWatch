@@ -22,7 +22,7 @@ RUN crontab /root/crons.conf
 # Start cron
 RUN cron
 
-# Install plexWebWatch Dependencies
+# Install plexWatchWeb Dependencies
 RUN apt-get install -qy apache2 libapache2-mod-php5 wget php5-sqlite
 
 # Enable PHP
@@ -35,13 +35,13 @@ RUN rm -f /var/www/html/index.html
 ADD apache-config.conf /etc/apache2/sites-available/000-default.conf
 ADD ports.conf /etc/apache2/ports.conf
 
-# Install plexWebWatch v1.5.4.2
+# Install plexWatchWeb v1.5.4.2
 RUN mkdir -p /var/www/html/plexWatch
 RUN wget -P /tmp/ https://github.com/ecleese/plexWatchWeb/archive/v1.5.4.2.tar.gz
 RUN tar -C /var/www/html/plexWatch -xvf /tmp/v1.5.4.2.tar.gz --strip-components 1
 RUN chown -R www-data:www-data /var/www/html/plexWatch
 
-# Set config.php to under plexWatch
+# Set plexWatchWeb to use config.php in /plexWatch
 RUN ln -s /plexWatch/config.php /var/www/html/plexWatch/config/config.php
 
 # Manually set the apache environment variables in order to get apache to work immediately.
@@ -56,13 +56,20 @@ EXPOSE 8080
 # The plexWatch directory. Where the binary, config, and database is
 VOLUME /plexWatch
 
-# Plex Logfile directory for IP addresses
-VOLUME /log
+# Plex Logfile directory for tracking IP addresses
+VOLUME /logs
+
+# Add default plexWatchWeb config.php to container (used by firstrun.sh)
+ADD config.php /tmp/config.php
 
 # Add edge.sh to execute during container startup
 RUN mkdir -p /etc/my_init.d
 ADD edge.sh /etc/my_init.d/edge.sh
 RUN chmod +x /etc/my_init.d/edge.sh
+
+# Add firstrun.sh to execute during container startup
+ADD firstrun.sh /etc/my_init.d/firstrun.sh
+RUN chmod +x /etc/my_init.d/firstrun.sh
 
 # Add apache to runit
 RUN mkdir /etc/service/apache
